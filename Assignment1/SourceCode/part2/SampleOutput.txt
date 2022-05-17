@@ -1,0 +1,73 @@
+DecisionTree.py 10 fold output
+
+PS D:\2022\comp307\Assignment1\SourceCode\part2> py DecisionTree.py
+0)0.7666666666666667
+1)0.8
+2)0.6666666666666666
+3)0.7333333333333333
+4)0.8
+5)0.7
+6)0.8
+7)0.8333333333333334
+8)0.6333333333333333
+9)0.7666666666666667
+Ten fold average = 0.7499999999999999
+
+The average may vary between runs due to some randomness if probability is 0.5
+
+-------------------------------------------------------------------------------------------------------
+
+Sample Output for DecisionTree.py if hepatitis-trainign and hepatitits-test are used
+
+PS D:\2022\comp307\Assignment1\SourceCode\part2> py DecisionTree.py hepatitis-training hepatitis-test
+ASCITES  = TRUE:
+        SPIDERS  = TRUE:
+                VARICES  = TRUE:
+                        STEROID  = TRUE:
+                                live , prob =  1.0
+                        STEROID  = FALSE:
+                                SPLEENPALPABLE  = TRUE:
+                                        FIRMLIVER  = TRUE:
+                                                live , prob =  1.0
+                                        FIRMLIVER  = FALSE:
+                                                BIGLIVER  = TRUE:
+                                                        SGOT  = TRUE:
+                                                                live , prob =  1.0
+                                                        SGOT  = FALSE:
+                                                                FEMALE  = TRUE:
+                                                                        live , prob =  1.0        
+                                                                FEMALE  = FALSE:
+                                                                        ANOREXIA  = TRUE:
+                                                                                die , prob =  1.0 
+                                                                        ANOREXIA  = FALSE:        
+                                                                                live , prob =  1.0
+                                                BIGLIVER  = FALSE:
+                                                        live , prob =  1.0
+                                SPLEENPALPABLE  = FALSE:
+                                        HISTOLOGY  = TRUE:
+                                                die , prob =  1.0
+                                        HISTOLOGY  = FALSE:
+                                                live , prob =  1.0
+                VARICES  = FALSE:
+                        die , prob =  1.0
+        SPIDERS  = FALSE:
+                BILIRUBIN  = TRUE:
+                        FATIGUE  = TRUE:
+                                AGE  = TRUE:
+                                        live , prob =  1.0
+                                AGE  = FALSE:
+                                        die , prob =  1.0
+                        FATIGUE  = FALSE:
+                                ANTIVIRALS  = TRUE:
+                                        MALAISE  = TRUE:
+                                                live , prob =  0.75
+                                        MALAISE  = FALSE:
+                                                live , prob =  0.7
+                                ANTIVIRALS  = FALSE:
+                                        live , prob =  1.0
+                BILIRUBIN  = FALSE:
+                        live , prob =  0.8888888888888888
+ASCITES  = FALSE:
+        die , prob =  0.7333333333333333
+Baseline: ['live', 0.8125]
+Test accuracy: 0.76
