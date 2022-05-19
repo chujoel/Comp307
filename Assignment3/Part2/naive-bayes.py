@@ -62,21 +62,47 @@ def train():
                 allProb[classLabels[i]+attribute+thing] = AllCounterDict[classLabels[i]+attribute+thing] / attributeTotal[classLabels[i]+attribute]
 
 
-def calculateScore(testInstance):
-    score = prob[classLabels.index(testInstance[0])]
+def calculateScore(testInstance, classLabel):
+    score = prob[classLabels.index(classLabel)]
     for i in range(len(testInstance)):
-        if i==0: continue
-        score = score * allProb[testInstance[0]+attributes[i-1]+testInstance[i]]
-    print(score)
+        score = score * allProb[classLabel+attributes[i]+testInstance[i]]
+    return (score)
 
+def calculateScores(instances):
+    correct = 0
+    for instance in instances:
+        answer = instance.pop(0)
+        bestLabel = "no-recurrence-events"
+        bestScore = calculateScore(instance, bestLabel)
+
+        otherScore = calculateScore(instance, "recurrence-events")
+        print("no-recurrence-events score: "+str(bestScore))
+        print("recurrence-events score: "+str(otherScore))
+        if(otherScore > bestScore):
+            bestLabel = "recurrence-events"
+            bestScore = otherScore
+        if(answer == bestLabel):
+            correct+=1
+        print("Prediction: "+bestLabel+" Actual: "+answer+"\n")
+
+    print("accuracy is: "+str(correct)+"/"+str(len(instances)))
+
+# def printProbabilities():
+    # for label in classLabels:
+        # for attribute in attributes:
+        #     for thing in allAtributes[attribute]:
+        #         print("Probability of: '"+label+attribute+thing+"' = "+str(allProb[label+attribute+thing]))
+
+    # for i in range(len(classLabels)):
+    #     print(str(classLabels[i])+" = "+str(prob[i]))
 
 def main():
     initializeCounters()
     loadSets("breast-cancer-training.csv", trainingInstances)
     train()
     loadSets("breast-cancer-test.csv", testInstances)
-    calculateScore(testInstances[0])
-
+    calculateScores(testInstances)
+    # printProbabilities()
 
 if __name__ == "__main__":
     main()
