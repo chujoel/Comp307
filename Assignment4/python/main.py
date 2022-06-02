@@ -1,3 +1,4 @@
+from sklearn.metrics import euclidean_distances
 import utility as utility
 import loader as loader
 import numpy as np
@@ -23,6 +24,7 @@ def main():
     # Uncomment it to do your assignment!
 
     nnh_solution = nearest_neighbour_heuristic(px, py, demand, capacity, depot)
+    print(nnh_solution)
     nnh_distance = utility.calculate_total_distance(nnh_solution, px, py, depot)
     print("Nearest Neighbour VRP Heuristic Distance:", nnh_distance)
     utility.visualise_solution(nnh_solution, px, py, depot, "Nearest Neighbour Heuristic")
@@ -30,16 +32,17 @@ def main():
     # Executing and visualizing the saving VRP heuristic.
     # Uncomment it to do your assignment!
     
-    # sh_solution = savings_heuristic(px, py, demand, capacity, depot)
-    # sh_distance = utility.calculate_total_distance(sh_solution, px, py, depot)
-    # print("Saving VRP Heuristic Distance:", sh_distance)
-    # utility.visualise_solution(sh_solution, px, py, depot, "Savings Heuristic")
+    sh_solution = savings_heuristic(px, py, demand, capacity, depot)
+    print(sh_solution)
+    sh_distance = utility.calculate_total_distance(sh_solution, px, py, depot)
+    print("Saving VRP Heuristic Distance:", sh_distance)
+    utility.visualise_solution(sh_solution, px, py, depot, "Savings Heuristic")
 
 def get_distance_dict(nodes, px,py,currNode):
     distanceList = []
     for node in nodes:
         distanceList.append([node, utility.calculate_euclidean_distance(px,py,node,currNode)])
-
+    
         
 
     return sorted(distanceList, key = lambda x: x[1])
@@ -74,10 +77,8 @@ def nearest_neighbour_heuristic(px, py, demand, capacity, depot):
         if newRoute:
             currNode=depot
         distanceList = get_distance_dict(remainingNodes,px,py, currNode)
-        print(distanceList)
         for distance in distanceList:
             if demand[distance[0]] + (currCapacity) <= (capacity):
-                print(distance[0])
                 newRoute=False
                 currCapacity+=demand[distance[0]]
                 currRoute.append(distance[0])
@@ -93,6 +94,14 @@ def nearest_neighbour_heuristic(px, py, demand, capacity, depot):
             currCapacity=0
     return tours
 
+def calculate_savings(px, py, route1, route2, depot):
+    return utility.calculate_euclidean_distance(px,py,depot, route1[0][-1] ) + utility.calculate_euclidean_distance(px,py,depot, route2[0][0]) - utility.calculate_euclidean_distance(px,py,route1[0][-1], route2[0][0])
+
+def merge_route(mergeList):
+    route1 = mergeList[1]
+    route2 = mergeList[2]
+    newDemand = mergeList[3]
+    return [route1[0]+route2[0], route1[1]+route2[1]-mergeList[0], newDemand]
 
 def savings_heuristic(px, py, demand, capacity, depot):
 
@@ -108,9 +117,38 @@ def savings_heuristic(px, py, demand, capacity, depot):
     """
 
     # TODO - Implement the Saving Heuristic to generate VRP solutions.
+    allNodes= list(range(1,len(px)))
+    currentRoutes = []
+    for node in allNodes:
+        currentRoutes.append([[node], utility.calculate_euclidean_distance(px,py,depot,node)*2, demand[node]])
+    while(1):
+        savingsList = []
+        for route1 in currentRoutes:
+            for route2 in currentRoutes:
+                if(route1==route2):
+                    continue
+                # Calculate savings
+                if (route2[2]+route1[2])<=capacity:
+                    savings = calculate_savings(px,py,route1, route2, depot)
+                    savingsList.append([savings, route1, route2, route2[2]+route1[2]])
 
-    return None
+        savingsList = sorted(savingsList, reverse=True)
+        if len(savingsList) == 0:
+            returnList = []
+            for route in currentRoutes:
+                returnList.append(route[0])
+            return returnList 
+        
+        # Find Merge
+        currentRoutes.append(merge_route(savingsList[0]))
 
-
+        # Delete merged routes
+        for route in currentRoutes:
+            if str(route)== str(savingsList[0][1]):
+                currentRoutes.remove(route)
+        for route in currentRoutes:
+            if str(route)== str(savingsList[0][2]):
+                currentRoutes.remove(route)
+                
 if __name__ == '__main__':
     main()

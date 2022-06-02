@@ -13,7 +13,6 @@ def calculate_euclidean_distance(px, py, index1, index2):
     :param index2: Node 2 index in the coordinate list.
     :return: Euclidean distance between node 1 and 2.
     """
-
     # TODO - Implement the euclidean distance function.
     return math.sqrt(pow(px[index1]-px[index2],2) + pow(py[index1]-py[index2],2))
     
